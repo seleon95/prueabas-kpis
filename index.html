@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infografía de KPIs de Cumplimiento v4 - Análisis Experto</title>
+    <title>Infografía de KPIs de Cumplimiento v4.1 - Análisis Experto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,6 +97,14 @@
                 <p class="text-center text-slate-600 mb-6">Esta matriz cruza las áreas con los parámetros. Las celdas más oscuras y rojas indican una mayor frecuencia de incumplimiento, revelando exactamente dónde se concentran los problemas más críticos.</p>
                 <div class="overflow-x-auto">
                     <div id="heatmapContainer" class="text-xs"></div>
+                </div>
+            </section>
+
+            <section id="area-analysis" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-2 text-slate-900">KPI: Ranking de Cumplimiento por Área</h2>
+                <p class="text-center text-slate-600 mb-6">Clasificación de todas las áreas de la planta según su porcentaje de cumplimiento general. Este es el punto de partida para identificar las áreas con mejor y peor rendimiento.</p>
+                <div class="horizontal-chart-container" style="height: 800px; max-height: 800px;">
+                    <canvas id="areasChart"></canvas>
                 </div>
             </section>
 
@@ -269,6 +277,40 @@
 
         tableHTML += '</tbody></table>';
         heatmapContainer.innerHTML = tableHTML;
+
+        const areasData = {
+            labels: ['PTAR', 'Vigilancia', 'Reclutamiento', 'Subestación 1', 'Servicios exterior', 'Calderas', 'Comedor', 'Oficinas generales', 'Taller automotriz', 'Ventas', 'Soldadores', 'Subestación 2', 'Recibo de leche', 'Mezclas', 'Oficinas de producción', 'Devoluciones', 'Tarimas', 'Mantenimiento', 'Pasillo principal', 'Almacen UHT', 'Almacen de materia prima', 'CIP', 'Helados', 'Soplado', 'Anden', 'Compre/ Refrigueración', 'Cuarto fío', 'HTST y embalaje', 'Almacen de químicos', 'Procesos', 'Laboratorio de calidad', 'Materia prima', 'UHT y embalaje', 'Derivados'],
+            values: [100.0, 100.0, 100.0, 99.8, 99.7, 99.6, 99.5, 99.4, 99.3, 99.2, 99.1, 99.0, 98.9, 98.8, 98.5, 98.4, 98.2, 98.0, 97.8, 97.5, 97.2, 97.0, 96.8, 96.5, 96.0, 95.8, 95.5, 95.0, 94.5, 94.0, 93.2, 92.8, 91.5, 90.7]
+        };
+
+        const areasCtx = document.getElementById('areasChart').getContext('2d');
+        const areasChart = new Chart(areasCtx, {
+            type: 'bar',
+            data: {
+                labels: areasData.labels,
+                datasets: [{
+                    label: 'Cumplimiento por Área (%)',
+                    data: areasData.values,
+                    backgroundColor: '#003f5c',
+                    borderColor: '#003f5c',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        min: 85,
+                        max: 100,
+                        ticks: { callback: (value) => value + '%', font: { family: "'Inter', sans-serif" } }
+                    },
+                    y: { ticks: { font: { family: "'Inter', sans-serif" } } }
+                },
+                plugins: { ...commonPlugins, legend: { display: false } }
+            }
+        });
 
         const riesgoPonderadoCtx = document.getElementById('riesgoPonderadoChart').getContext('2d');
         const riesgoPonderadoChart = new Chart(riesgoPonderadoCtx, {
