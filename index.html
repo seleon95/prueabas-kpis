@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía de KPIs de Cumplimiento v4 - Análisis Experto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+        .horizontal-chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 60vh;
+            max-height: 500px;
+        }
+        .heatmap-cell {
+            transition: transform 0.2s ease-in-out;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            border: 1px solid white;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 50vh;
+            }
+            .horizontal-chart-container {
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Análisis Experto de Cumplimiento: Junio</h1>
+            <p class="text-lg text-slate-600">Visión 360°: Rendimiento, Riesgo Ponderado, Causa Raíz y Persistencia.</p>
+        </header>
+
+        <main class="space-y-8">
+            
+            <section id="turno-overview" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-6 text-slate-900">KPI: Rendimiento por Turno</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h3 class="font-bold text-2xl text-[#003f5c]">1er Turno</h3>
+                        <p class="text-5xl font-bold text-[#003f5c]">95.88%</p>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h3 class="font-bold text-2xl text-[#7a5195]">2do Turno</h3>
+                        <p class="text-5xl font-bold text-[#7a5195]">88.45%</p>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg">
+                        <h3 class="font-bold text-2xl text-[#ffa600]">3er Turno</h3>
+                        <p class="text-5xl font-bold text-[#ffa600]">98.53%</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                     <p class="text-center text-slate-600 mb-6">Evolución diaria del cumplimiento para identificar tendencias y anomalías a lo largo del mes.</p>
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+             <section id="causa-raiz-analysis" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-2 text-slate-900">KPI: Análisis de Causa Raíz</h2>
+                <p class="text-center text-slate-600 mb-6">Clasificación de los incumplimientos para determinar si se deben a comportamientos (<span class="font-bold text-[#bc5090]">Actos Inseguros</span>) o a fallas del entorno (<span class="font-bold text-[#003f5c]">Condiciones Inseguras</span>). Esto define si las acciones deben enfocarse en capacitación o en mantenimiento.</p>
+                <div class="chart-container" style="height: 350px; max-height: 350px;">
+                    <canvas id="causaRaizChart"></canvas>
+                </div>
+            </section>
+
+            <section id="heatmap-analysis" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-2 text-slate-900">KPI: Matriz de Riesgo (Área vs. Parámetro)</h2>
+                <p class="text-center text-slate-600 mb-6">Esta matriz cruza las áreas con los parámetros. Las celdas más oscuras y rojas indican una mayor frecuencia de incumplimiento, revelando exactamente dónde se concentran los problemas más críticos.</p>
+                <div class="overflow-x-auto">
+                    <div id="heatmapContainer" class="text-xs"></div>
+                </div>
+            </section>
+
+            <section id="riesgo-ponderado-analysis" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-2 text-slate-900">KPI: Índice de Riesgo Ponderado por Área</h2>
+                <p class="text-center text-slate-600 mb-6">No todos los incumplimientos son iguales. Este KPI recalcula el riesgo asignando mayor peso a las fallas más críticas (ej. EPP, Equipos de Emergencia). Muestra el "verdadero" nivel de riesgo de cada área, más allá del cumplimiento general.</p>
+                <div class="horizontal-chart-container">
+                    <canvas id="riesgoPonderadoChart"></canvas>
+                </div>
+            </section>
+
+            <section id="persistencia-analysis" class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                <h2 class="text-2xl font-bold text-center mb-2 text-slate-900">KPI: Tasa de Persistencia de Incumplimientos</h2>
+                <p class="text-center text-slate-600 mb-6">Identifica los problemas más recurrentes a lo largo del mes. Una alta persistencia sugiere que las acciones correctivas no están siendo efectivas o no se están aplicando.</p>
+                <div class="horizontal-chart-container" style="height: 400px; max-height: 400px;">
+                    <canvas id="persistenciaChart"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 text-slate-500 text-sm">
+            <p>Infografía de Cumplimiento Operativo.</p>
+        </footer>
+    </div>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            } else {
+                return label;
+            }
+        };
+
+        const commonPlugins = {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        family: "'Inter', sans-serif",
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: tooltipTitleCallback
+                },
+                titleFont: { family: "'Inter', sans-serif", size: 16 },
+                bodyFont: { family: "'Inter', sans-serif", size: 14 }
+            }
+        };
+
+        const wrapLabel = (label, maxLength = 16) => {
+            if (typeof label !== 'string' || label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        };
+        
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: 30 }, (_, i) => `Día ${i + 1}`),
+                datasets: [
+                    {
+                        label: '1er Turno',
+                        data: [96, 97, 95, 98, 94, 96, 95, 97, 99, 93, 95, 96, 97, 94, 98, 95, 96, 93, 97, 99, 95, 96, 94, 98, 97, 95, 96, 92, 98, 97],
+                        borderColor: '#003f5c',
+                        backgroundColor: '#003f5c20',
+                        tension: 0.3,
+                        fill: true,
+                    },
+                    {
+                        label: '2do Turno',
+                        data: [90, 85, 88, 82, 91, 86, 89, 80, 92, 84, 87, 93, 81, 88, 95, 78, 86, 90, 83, 94, 85, 89, 91, 82, 93, 87, 84, 96, 80, 88],
+                        borderColor: '#7a5195',
+                        backgroundColor: '#7a519520',
+                        tension: 0.3,
+                        fill: true,
+                    },
+                    {
+                        label: '3er Turno',
+                        data: [99, 98, 100, 99, 97, 98, 99, 100, 98, 99, 97, 98, 99, 100, 98, 99, 98, 97, 100, 99, 98, 99, 100, 98, 97, 99, 100, 98, 99, 98],
+                        borderColor: '#ffa600',
+                        backgroundColor: '#ffa60020',
+                        tension: 0.3,
+                        fill: true,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 75,
+                        max: 101,
+                        ticks: { callback: (value) => value + '%', font: { family: "'Inter', sans-serif" } }
+                    },
+                    x: { ticks: { font: { family: "'Inter', sans-serif" } } }
+                },
+                plugins: commonPlugins
+            }
+        });
+
+        const causaRaizCtx = document.getElementById('causaRaizChart').getContext('2d');
+        const causaRaizChart = new Chart(causaRaizCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Actos Inseguros (Comportamiento)', 'Condiciones Inseguras (Entorno)'],
+                datasets: [{
+                    label: 'Origen de Incumplimientos',
+                    data: [45, 55],
+                    backgroundColor: ['#bc5090', '#003f5c'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: commonPlugins
+            }
+        });
+
+        const heatmapData = {
+            areas: ['Derivados', 'UHT y embalaje', 'Laboratorio', 'Procesos', 'Almacen Químicos'],
+            preguntas: ['Uso de EPP', 'Uniforme Completo', 'Contenedores RPBI', 'Tarimas Limpias', 'Equipos Libres'],
+            failures: [
+                [8, 2, 1, 0, 0], 
+                [7, 9, 3, 1, 0], 
+                [2, 3, 8, 2, 1], 
+                [4, 1, 2, 7, 2], 
+                [0, 0, 5, 6, 1]  
+            ]
+        };
+
+        const heatmapContainer = document.getElementById('heatmapContainer');
+        let tableHTML = '<table class="w-full border-collapse"><thead><tr><th class="p-2 border">Área / Parámetro</th>';
+        heatmapData.preguntas.forEach(p => {
+            tableHTML += `<th class="p-2 border text-center align-bottom" style="writing-mode: vertical-rl; text-orientation: mixed;">${p}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody>';
+
+        const maxFailures = Math.max(...heatmapData.failures.flat());
+
+        heatmapData.areas.forEach((area, i) => {
+            tableHTML += `<tr><td class="p-2 border font-semibold">${area}</td>`;
+            heatmapData.failures[i].forEach(failureCount => {
+                const opacity = failureCount / maxFailures;
+                const color = `rgba(239, 86, 117, ${opacity})`;
+                tableHTML += `<td class="p-2 border text-center font-bold text-white heatmap-cell" style="background-color: ${color};" title="${failureCount} incumplimientos">${failureCount}</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += '</tbody></table>';
+        heatmapContainer.innerHTML = tableHTML;
+
+        const riesgoPonderadoCtx = document.getElementById('riesgoPonderadoChart').getContext('2d');
+        const riesgoPonderadoChart = new Chart(riesgoPonderadoCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Derivados', 'UHT y embalaje', 'Laboratorio', 'Procesos', 'Almacen Químicos'],
+                datasets: [{
+                    label: 'Cumplimiento (%)',
+                    data: [90.7, 91.5, 93.2, 94.0, 94.5],
+                    backgroundColor: '#58508d',
+                }, {
+                    label: 'Índice de Riesgo (Menor es peor)',
+                    data: [82, 81, 88, 90, 91],
+                    backgroundColor: '#ff6361',
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { min: 70, max: 100, ticks: { callback: (value) => value + '%', font: { family: "'Inter', sans-serif" } } },
+                    y: { ticks: { font: { family: "'Inter', sans-serif" } } }
+                },
+                plugins: commonPlugins
+            }
+        });
+
+        const persistenciaCtx = document.getElementById('persistenciaChart').getContext('2d');
+        const persistenciaChart = new Chart(persistenciaCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    '¿El personal tiene uniforme completo y botas de seguridad?',
+                    '¿Los colaboradores portan su EPP correctamente y completo?',
+                    '¿Las tarimas para derrames estan limpias y en el área designada?',
+                    '¿Los contenedores de RPBI se encuentran cerrados e identificados?',
+                    '¿Equipos de emergencia libres?'
+                ].map(l => wrapLabel(l, 30)),
+                datasets: [{
+                    label: 'N° de Incumplimientos Registrados',
+                    data: [28, 25, 21, 19, 15],
+                    backgroundColor: '#ffa600'
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, ticks: { font: { family: "'Inter', sans-serif" } } },
+                    y: { ticks: { font: { family: "'Inter', sans-serif" } } }
+                },
+                plugins: {...commonPlugins, legend: {display: false}}
+            }
+        });
+    </script>
+</body>
+</html>
